@@ -1,0 +1,84 @@
+#include <conio.h>
+#include <stdio.h>
+#include <windows.h>
+
+struct list
+{
+	char info;
+	list *next;
+}*l1, *l2, *begin;
+
+const UCHAR MAX = 100;
+
+
+int finding(list *begin, int row[], int item[], int n);
+
+int main()
+{
+	char elem;
+	l1 = NULL;
+	begin = NULL;
+	FILE *fp = NULL;
+	fopen_s(&fp, "TEXT.txt", "r");
+	if (!fp)
+	{
+		printf_s("Error");
+	}
+	else 
+	{
+	    l1 = new list; // создание односвязного списка
+		begin = l1;    // фиксирование начала списка
+		while (!feof(fp))
+			while (fscanf_s(fp, "%c", &elem) != EOF)
+	    	{
+		    	l2 = new list; // занесение в фиктивное
+		    	l2->info = elem; // звено списка
+		    	l1->next = l2;  // последовательность символов,
+		    	l1 = l2;        // кроме пробела, из строк
+		    	if (elem == '.')
+		    	{
+		    		l1->next = NULL;
+		    	}
+	    	}
+	}
+	fclose(fp);
+	int row[MAX];  // создание двух массивов, содержащих
+	int item[MAX]; // номера строк и позиций гласных в тексте
+	int n = 0; // количество значений в каждом из массивов
+	if (l1 != begin) finding(begin, row[], item[], n);
+	FILE *in;
+	fopen_s(&in, "TEXT_RESULT.txt", "a");
+	fixrow = 0; // создаём переменную для проверки на равенство row,
+	for (int i = 0; i < n; i++) // чтобы в каждой строке выводилось
+		if (row[i] != fixrow)   // только первое вхождение
+		{
+			fprintf_s(in, "%d - %d\n", row[i], item[i]);
+			fixrow = row[i];
+		}
+	fclose(in);
+	_getch();
+	return 0;
+}
+
+int finding(list *begin, int row[], int item[], int n)
+{
+    int r, i; // r - значение в row, i - значение в item
+	r = 1; i = 0;
+	while (begin->info != '.')
+	{
+		if (begin->info == ' ')
+		{
+			r++;
+			i = 0;
+		}
+		else
+			if ((begin->info == 'a') or (begin->info == 'e') or (begin->info == 'i') or (begin->info == 'o') or (begin->info == 'u') or (begin->info == 'y'))
+			{
+				row[n] = r;
+				item[n] = i;
+				n++;
+			}
+		begin = begin->next; // проходимся по списку
+		i++;
+	}
+}
